@@ -21,11 +21,13 @@ github https://github.com/gitvssh
 스킬셋
 
 Programming Language
-HTML5, CSS3
-Java, Servlet, JSP(EL/JSTL), Javascript
+Java
 
-Framwork / Library 
-Spring, Bootstrap, jQuery, iBatis,myBatis
+Front-End
+HTML5, CSS3, Javascript, Bootstrap, jQuery
+
+Back-End
+Servlet, JSP(EL/JSTL), Spring, iBatis,myBatis
 
 Server 
 Apache, Tomcat(8.5)
@@ -39,8 +41,6 @@ git, gitHub, trello, slack
 Enviroment 
 Windows, eclipse, android studio, visual studio
 
-training 
-c++, python, unity
 
 - 자기소개
 
@@ -51,6 +51,8 @@ CS와 알고리즘에 관심이 많습니다.
 - 팀프로젝트(소개, 역할, 이슈)
 
 1. 도서관리 프로그램
+자바를 활용한 CUI환경 도서관리 프로그램 개발
+https://github.com/gitvssh/Library
 
 Technical Lead
 Git,GitHub 소개 및 도입
@@ -64,6 +66,7 @@ developer
 
 2. 영화소개웹사이트(html)
 html과 css를 활용한 웹사이트제작 프로젝트
+https://github.com/gitvssh/html
 
 Technical Lead
 Versioning : Git 협업 플로우 관리(push,merge,conflict,code review)
@@ -84,6 +87,7 @@ HTML5와 CSS3를 활용한 반응형웹페이지
 
 3. (대외활동)모두의 한강몽땅 - 서울시 앱공모전(2018)
 서울시 앱공모전 - 한강몽땅 축제 소개 안드로이드앱
+https://github.com/gitvssh/Hangang
 
 Technical Lead
 Versioning : Git 협업 플로우 관리(push,merge,conflict,code review)
@@ -111,6 +115,7 @@ SQLite DB구현
 
 4. 영화소개웹사이트 리뉴얼(jsp)
 과거 html과 css로 만든 웹사이트 jsp와 db를 연동하여 리뉴얼
+https://github.com/gitvssh/pWebsite
 
 Technical Lead
 Versioning : Git 협업 플로우 관리(push,merge,conflict,code review)
@@ -123,7 +128,7 @@ Project Lead
 이슈관리(오픈소스 도입, 요구사항변경)
 
 People Management
-
+페어프로그래밍을 통해 팀원 기술역량 향상
 
 developer
 게시판 페이징
@@ -135,14 +140,16 @@ developer
 
 1. 자바를 활용한 보드게임만들기 오목, 숫자야구, 포커
 18.05~18.06
-요구사항분석,설계,개발 숙달을 위한 연습예제
 https://github.com/gitvssh/TIL/tree/master/src/javaR/games
+요구사항분석,설계,개발 숙달을 위한 연습예제
+
 
 
 2. 스윙을 활용한 그림판만들기
 18.06~18.07
-cui 환경에서 벗어나고 다양한 입출력방법 숙달을 위해서
 https://github.com/gitvssh/TIL/tree/master/src/javaR/guipractice
+cui 환경에서 벗어나고 다양한 입출력방법 숙달을 위해서
+
 
 3. 패스트푸드점 데이터베이스 설계
 18.07
@@ -150,6 +157,7 @@ https://github.com/gitvssh/TIL/tree/master/src/javaR/guipractice
 
 
 4. 개인라이브러리 제작
+https://github.com/gitvssh/TIL/tree/master/src/algorithms
 18.07~진행중
 알고리즘, ProblemSolving을 위한 메서드 라이브러리
 자주쓰는 기능들 정리
