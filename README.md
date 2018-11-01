@@ -8,15 +8,7 @@
 
 이메일주소 gmavsks@gmail.com
 
-블로그 http://damecasol.tistory.com
-
 github https://github.com/gitvssh
-
-학력사항 2007.2 서울 대성고등학교 졸업 
-
-2013 목포해양대학교 정보통신공학과 중퇴
-
-경력사항 2018.4~2018.11 이젠아카데미 교육 수료
 
 스킬셋
 
