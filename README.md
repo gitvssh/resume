@@ -27,13 +27,13 @@ Enviroment
 Windows, eclipse, android studio, visual studio
 
 
-- 자기소개
+자기소개
 
 CS와 알고리즘에 관심이 많습니다.
 
-- 프로젝트소개
+프로젝트소개
 
-- 팀프로젝트(소개, 역할, 이슈)
+팀프로젝트(소개, 역할, 이슈)
 
 1. 도서관리 프로그램
 자바를 활용한 CUI환경 도서관리 프로그램 개발
