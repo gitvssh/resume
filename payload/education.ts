@@ -16,18 +16,6 @@ const education: IEducation.Payload = {
       startedAt: '2018-03',
       endedAt: '2020-02',
     },
-    {
-      title: '국립목포해양대학교',
-      subTitle: '해양정보통신공학과(중퇴)',
-      startedAt: '2010-03',
-      endedAt: '2013-02',
-    },
-    {
-      title: '대성고등학교',
-      subTitle: '졸업',
-      startedAt: '2004-03',
-      endedAt: '2007-02',
-    },
   ],
 };
 

@@ -1,0 +1,921 @@
+diff --git a/component/etc/index.tsx b/component/etc/index.tsx
+index e1ea7a0..229150c 100644
+--- a/component/etc/index.tsx
++++ b/component/etc/index.tsx
+@@ -22,7 +22,7 @@ export const Etc = {
+ 
+ function Component({ payload }: PropsWithChildren<{ payload: Payload }>) {
+   return (
+-    <CommonSection title="ETC">
++    <CommonSection title="ACTIVITY">
+       <EducationRow payload={payload} />
+     </CommonSection>
+   );
+diff --git a/component/experience/index.tsx b/component/experience/index.tsx
+index 3b11cf5..d64d403 100644
+--- a/component/experience/index.tsx
++++ b/component/experience/index.tsx
+@@ -49,19 +49,34 @@ function Component({ payload }: PropsWithChildren<{ payload: Payload }>) {
+ }
+ 
+ function getFormattingExperienceTotalDuration(payload: IExperience.Payload) {
+-  const durations = payload.list.reduce((acc: Duration[], item: IExperience.Item) => {
+-    const itemDurations = item.positions.map((position: IExperience.Position) => {
+-      const endedAt = position.endedAt
+-        ? DateTime.fromFormat(position.endedAt, Util.LUXON_DATE_FORMAT.YYYY_LL)
+-        : DateTime.local();
+-      const startedAt = DateTime.fromFormat(position.startedAt, Util.LUXON_DATE_FORMAT.YYYY_LL);
+-      return endedAt.diff(startedAt);
+-    });
+-    return acc.concat(itemDurations); // 중첩된 배열 평탄화
++  const periods = payload.list
++    .reduce(
++      (acc: { startedAt: DateTime; endedAt: DateTime }[], item: IExperience.Item) =>
++        acc.concat(
++          item.positions.map((position: IExperience.Position) => ({
++            startedAt: DateTime.fromFormat(position.startedAt, Util.LUXON_DATE_FORMAT.YYYY_LL),
++            endedAt: position.endedAt
++              ? DateTime.fromFormat(position.endedAt, Util.LUXON_DATE_FORMAT.YYYY_LL)
++              : DateTime.local(),
++          })),
++        ),
++      [],
++    )
++    .sort((a, b) => a.startedAt.toMillis() - b.startedAt.toMillis());
++
++  const mergedPeriods = periods.reduce((acc: typeof periods, period) => {
++    const last = acc[acc.length - 1];
++    if (!last || period.startedAt > last.endedAt) {
++      return acc.concat(period);
++    }
++    if (period.endedAt > last.endedAt) {
++      last.endedAt = period.endedAt;
++    }
++    return acc;
+   }, []);
+ 
+-  const totalExperience = durations.reduce(
+-    (prev: Duration, cur: Duration) => prev.plus(cur),
++  const totalExperience = mergedPeriods.reduce(
++    (prev: Duration, period) => prev.plus(period.endedAt.diff(period.startedAt)),
+     Duration.fromMillis(0),
+   );
+ 
+diff --git a/component/experience/row.tsx b/component/experience/row.tsx
+index 5fdb473..3133485 100644
+--- a/component/experience/row.tsx
++++ b/component/experience/row.tsx
+@@ -64,15 +64,6 @@ export default function ExperienceRow({
+         </Col>
+         <Col sm={12} md={9}>
+           <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+-<<<<<<< HEAD
+-            {item.title}{' '}
+-            {item.url && (
+-              <small style={{ fontSize: '60%', marginLeft: '0.5rem' }}>
+-                <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: '#007bff' }}>
+-                  [link]
+-                </a>
+-              </small>
+-=======
+             {item.url ? (
+               <a
+                 href={item.url}
+@@ -84,7 +75,6 @@ export default function ExperienceRow({
+               </a>
+             ) : (
+               item.title
+->>>>>>> 00dcaded222c391d5f01536c1368fc477122ca74
+             )}{' '}
+             <span style={{ fontSize: '65%', display: 'inline-flex', alignItems: 'center' }}>
+               {isCurrentlyEmployed && (
+diff --git a/component/footer/index.tsx b/component/footer/index.tsx
+index 3281f3d..94f6aa6 100644
+--- a/component/footer/index.tsx
++++ b/component/footer/index.tsx
+@@ -17,10 +17,10 @@ function Component({ payload }: PropsWithChildren<{ payload: IFooter.Payload }>)
+           <EmptyRowCol>
+             <small>
+               v.{`${payload.version} / `}
+-              {/* Github 주소는 origin repository 의 주소를 넣는다. */}
+-              <HrefTargetBlank url="https://github.com/uyu423/resume-nextjs" text="Github" />
++              <HrefTargetBlank url={payload.github} text="GitHub Source" />
+               {' / '}
+-              Thanks for <HrefTargetBlank url="https://blog.outsider.ne.kr/1234" text="Outsider" />
++              Based on{' '}
++              <HrefTargetBlank url="https://github.com/uyu423/resume-nextjs" text="resume-nextjs" />
+             </small>
+           </EmptyRowCol>
+         </div>
+diff --git a/package.json b/package.json
+index eb76b39..f66a7b0 100644
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "resume-nextjs",
+-  "lastestUpdatedAt": "2025-08-24",
++  "lastestUpdatedAt": "2026-07-14",
+   "version": "1.3.0",
+-  "description": "Static HTML based RESUME made with next.js",
++  "description": "이승현의 Backend / Platform Engineer 온라인 이력서",
+   "main": "index.js",
+   "scripts": {
+     "test": "echo \"Error: no test specified\" && exit 1",
+@@ -28,9 +28,9 @@
+     "next"
+   ],
+   "author": {
+-    "name": "Yowu Yu",
+-    "email": "me@yowu.dev",
+-    "url": "https://yowu.dev"
++    "name": "Seung-Hyun Lee",
++    "email": "gmavsks@gmail.com",
++    "url": "https://gitvssh.github.io/"
+   },
+   "contributors": [],
+   "license": "MIT",
+diff --git a/payload/_global.ts b/payload/_global.ts
+index 28eda8a..cd335c4 100644
+--- a/payload/_global.ts
++++ b/payload/_global.ts
+@@ -2,8 +2,9 @@ import favicon from '../asset/favicon.ico';
+ import previewImage from '../asset/preview.jpg';
+ import { IGlobal } from '../component/common/IGlobal';
+ 
+-const title = 'Damecasol Resume';
+-const description = 'This is a online web resume.';
++const title = '이승현 | Backend / Platform Engineer';
++const description =
++  '결제 도메인의 정합성과 운영 신뢰성을 설계하는 Backend / Platform Engineer 이승현의 온라인 이력서입니다.';
+ 
+ export const _global: IGlobal.Payload = {
+   favicon,
+@@ -19,16 +20,10 @@ export const _global: IGlobal.Payload = {
+           url: previewImage,
+           width: 800,
+           height: 600,
+-          alt: 'OpenGraph Image Sample.png',
++          alt: '이승현 온라인 이력서 미리보기',
+         },
+       ],
+-      type: 'profile',
+-      profile: {
+-        firstName: 'Lorem',
+-        lastName: 'ipsum',
+-        username: 'lorem',
+-        gender: 'female',
+-      },
++      type: 'website',
+     },
+   },
+ };
+diff --git a/payload/article.ts b/payload/article.ts
+index adb4fa6..f2c7c67 100644
+--- a/payload/article.ts
++++ b/payload/article.ts
+@@ -1,12 +1,16 @@
+ import { IArticle } from '../component/article/IArticle';
+ 
+ const article: IArticle.Payload = {
+-  disable: true,
++  disable: false,
+ 
+   list: [
+     {
+-      content: 'CAKD 시험 후기.',
+-      href: '#https://damecasol.tistory.com/103',
++      content: 'CKAD 시험 후기',
++      href: 'https://damecasol.tistory.com/103',
++    },
++    {
++      content: 'HashiCorp Vault 실무 가이드 전자책',
++      href: 'https://wikidocs.net/book/18285',
+     },
+   ],
+ };
+diff --git a/payload/education.ts b/payload/education.ts
+index f016bf7..b53487d 100644
+--- a/payload/education.ts
++++ b/payload/education.ts
+@@ -16,18 +16,6 @@ const education: IEducation.Payload = {
+       startedAt: '2018-03',
+       endedAt: '2020-02',
+     },
+-    {
+-      title: '국립목포해양대학교',
+-      subTitle: '해양정보통신공학과(중퇴)',
+-      startedAt: '2010-03',
+-      endedAt: '2013-02',
+-    },
+-    {
+-      title: '대성고등학교',
+-      subTitle: '졸업',
+-      startedAt: '2004-03',
+-      endedAt: '2007-02',
+-    },
+   ],
+ };
+ 
+diff --git a/payload/etc.ts b/payload/etc.ts
+index 9916400..26a0339 100644
+--- a/payload/etc.ts
++++ b/payload/etc.ts
+@@ -4,6 +4,18 @@ const etc: IEtc.Payload = {
+   disable: false,
+ 
+   list: [
++    {
++      title: '이너서클 AI 마스터 7기',
++      subTitle: '패스트캠퍼스 · AI Engineering',
++      startedAt: '2025-11',
++      endedAt: '2026-02',
++    },
++    {
++      title: '2025 공개SW 개발자 대회',
++      subTitle: 'AI Team Lead · LangChain/RAG 지식관리 시스템',
++      startedAt: '2025-06',
++      endedAt: '2025-12',
++    },
+     {
+       title: '자바(JAVA)를 활용한 안드로이드 앱개발',
+       subTitle: '이젠아카데미',
+diff --git a/payload/experience.ts b/payload/experience.ts
+index 6422f3e..c6fd584 100644
+--- a/payload/experience.ts
++++ b/payload/experience.ts
+@@ -5,31 +5,30 @@ const experience: IExperience.Payload = {
+   disableTotalPeriod: false,
+   list: [
+     {
+-      title: '큐뱅',
+-      url: 'https://qr-road.com/',
++      title: '핀테크 기업',
+       positions: [
+         {
+-          title: 'Developer',
++          title: 'Tech Lead / Senior Backend & Platform Engineer',
+           startedAt: '2025-04',
+           descriptions: [
+-            'AI 카드 추천 시스템 "AI 솔로몬" 프로젝트 리딩',
+-            '선불 페이 시스템 개발 및 유지보수',
+-            'ETL, MLops 아키텍처 및 ML Lifecycle 구성',
+-            '선불 페이 시스템 헥사고날 아키텍처 리팩토링',
+-            '3rd 암호화모듈 제거 및 Java진영 표준 암호화 모듈 설계/구현',
++            '차세대 선불결제 백엔드의 승인·충전·결제·환불·정산 도메인을 단독 설계·개발 중',
++            'Hexagonal Architecture와 Modular Monolith를 기반으로 원장 정합성, 상태 전이, 멱등성, Outbox 경계를 설계',
++            'React Native 기반 모바일 POS를 POC부터 프로덕션 1.0 배포까지 주도',
++            'LGTM 관측성 스택, Ansible·Terraform 자동화, Vault RBAC를 연결해 운영 기반 표준화',
++            '정부과제 기반 내부 카드추천 PoC에서 결제 데이터 피처 엔지니어링과 추천 모델링 수행',
+           ],
+-          skillKeywords: ['JAVA', 'SpringBoot', 'JPA', 'QueryDSL', 'Vault', 'Redis', 'Kafka'],
+-        },
+-        {
+-          title: 'System Engineer',
+-          startedAt: '2025-04',
+-          descriptions: [
+-            '인프라 자동화 및 DevOps 문화 개선',
+-            '컨테이너 기반 CI/CD 구축(jar 배포 개선)',
+-            '인프라 보고서 5개 업무자동화 (Ansible)',
+-            'Kafka, Vault, Jenkins, GitLab, Nexus를 포함한 CI/CD 및 보안 자동화 환경 구축·운영',
++          skillKeywords: [
++            'Java',
++            'Spring Boot',
++            'JPA',
++            'QueryDSL',
++            'PostgreSQL',
++            'Kafka',
++            'Vault',
++            'Ansible',
++            'Terraform',
++            'Grafana',
+           ],
+-          skillKeywords: ['Linux', 'Ansible', 'Python', 'Automation'],
+         },
+       ],
+     },
+@@ -38,17 +37,14 @@ const experience: IExperience.Payload = {
+       url: 'https://blog.naver.com/low_wall',
+       positions: [
+         {
+-          title: 'Lead Developer',
++          title: 'Lead Developer / Co-founder',
+           startedAt: '2023-04',
+           endedAt: '2025-03',
+           descriptions: [
+-            '전체 시스템 아키텍처 설계 및 기술 스택 결정',
+-            'AWS 인프라 구축 및 비용 최적화',
+-            '6명 개발팀 빌딩 및 기술 전략 수립',
+-            'MAU 500명 달성',
+-            '인프라 비용 70% 절감',
+-            '시스템 발전에 따른 아키텍처 개선(모노리스→멀티모듈→헥사고날)',
+-            '예비 사회적기업 인증 및 시드 투자 유치 (5천만원)',
++            '가족 기반 SNS를 아이디어 단계부터 출시·운영까지 Zero-to-One으로 설계·개발',
++            'DDD와 멀티모듈 구조를 적용해 도메인 로직과 API·Batch 경계를 분리',
++            'CloudWatch 분석, Right-Sizing, Spot Instance를 활용해 AWS 운영 비용 최적화',
++            '제품·사업 요구사항을 기술 전략과 실행 계획으로 전환하고 개발 프로세스를 주도',
+           ],
+           skillKeywords: ['AWS', 'Kubernetes', 'Docker', 'JAVA', 'SpringBoot', 'JPA', 'QueryDSL'],
+         },
+@@ -64,11 +60,9 @@ const experience: IExperience.Payload = {
+           endedAt: '2024-01',
+           descriptions: [
+             'KB Pay 연동 시스템 설계 및 구현',
+-            'Spring Batch 기반 데이터 파이프라인 구축',
++            'Spring Batch 기반 대규모 데이터 연동 파이프라인 구축',
+             'B2G 서비스 백오피스 개발',
+-            'MAU 2배 이상 증가 (KB Pay - Wello 연동)',
+-            '데이터 처리 성능 200% 향상 (시간당 20만건)',
+-            '데이터 정합성 99.99% 달성',
++            'Chunk 기반 처리와 QueryDSL 쿼리 최적화로 배치 성능과 데이터 정합성 개선',
+           ],
+           skillKeywords: ['AWS', 'JAVA', 'SpringBoot', 'JPA', 'QueryDSL'],
+         },
+@@ -83,12 +77,11 @@ const experience: IExperience.Payload = {
+           startedAt: '2021-05',
+           endedAt: '2023-09',
+           descriptions: [
+-            '하나은행 글로벌 차세대 시스템 개발',
++            '하나은행 글로벌 차세대 시스템 개발 및 데이터 이행 참여',
+             '레거시 시스템 현대화 및 DevOps 도입',
+             '베트남 VAN사 SharePOS 시스템 개발',
+-            '14개 해외지점 시스템 성공적 오픈',
+             '코드 품질 지표 50% 개선 (SonarQube 도입)',
+-            '배포 시간 90% 단축 (SVN → Git 전환, CI/CD Jenkins 도입)',
++            'SVN→Git 전환과 Jenkins CI/CD 도입으로 배포 시간 10분 이상에서 1분 미만으로 단축',
+           ],
+           skillKeywords: ['JAVA', 'Spring', 'PostgreSQL', 'Jira', 'Confluence', 'Oracle', 'MDD'],
+         },
+diff --git a/payload/footer.ts b/payload/footer.ts
+index 6a1fe9d..6cae3d8 100644
+--- a/payload/footer.ts
++++ b/payload/footer.ts
+@@ -1,10 +1,10 @@
+-import { homepage, version } from '../package.json';
++import { version } from '../package.json';
+ 
+ import { IFooter } from '../component/footer/IFooter';
+ 
+ const footer: IFooter.Payload = {
+   version,
+-  github: homepage,
++  github: 'https://github.com/gitvssh/gitvssh.github.io',
+ };
+ 
+ export default footer;
+diff --git a/payload/introduce.ts b/payload/introduce.ts
+index a32cb3a..b544d01 100644
+--- a/payload/introduce.ts
++++ b/payload/introduce.ts
+@@ -5,19 +5,9 @@ const introduce: IIntroduce.Payload = {
+   disable: false,
+ 
+   contents: [
+-<<<<<<< HEAD
+-    '"측정 가능한 성과와 지속 가능한 성장을 추구하는 5년차 백엔드 개발자입니다."',
+-    
+-    '금융권 차세대 시스템부터 스타트업 MVP까지 다양한 스펙트럼의 프로젝트를 성공적으로 리딩하며, 비즈니스 임팩트를 최우선으로 하는 기술 결정을 내려왔습니다.',
+-    
+-    '창업 경험을 통해 얻은 제품 오너십과 대규모 SI 프로젝트에서 익힌 안정성을 균형있게 활용하여, 단순 기능 구현을 넘어 실제 비즈니스 문제를 해결하는 개발자입니다. 특히 레거시 시스템을 단계적으로 현대화하면서도 다운타임 제로를 유지한 경험은 저의 큰 자산입니다.',
+-    
+-    '최근에는 AI 기반 카드 추천 시스템 프로젝트를 리딩하며 AI시대에 발맞춰 나가고, 선불페이 프로젝트에 헥사고날 아키텍처 도입으로 기술부채를 50% 감소시키는 등 기술 혁신과 실무 성과를 동시에 추구하고 있습니다.',
+-=======
+-    '5년차 백엔드 개발자로서 시스템 안정성과 비즈니스 가치 창출에 집중합니다.',
+-
+-    '금융 SI/SM과 스타트업 환경에서 쌓은 경험을 바탕으로, 기술적 문제 해결과 개발 프로세스 혁신을 주도해왔습니다. 정기적인 컨퍼런스 참여와 기술 트렌드 분석을 통해 조직에 필요한 신기술을 선제적으로 도입하며, 단순 코드 구현을 넘어 기술부채 해소와 측정 가능한 성과를 만들어내는 것이 저의 강점입니다.',
+->>>>>>> 00dcaded222c391d5f01536c1368fc477122ca74
++    '결제 도메인의 정합성과 운영 신뢰성을 설계하는 Backend / Platform Engineer입니다.',
++    '금융권 차세대 시스템, 스타트업의 Zero-to-One 제품 개발, 선불결제 플랫폼 설계·개발을 경험했습니다. 기능 구현에 그치지 않고 원장과 상태 전이, 멱등성, 트랜잭션 경계까지 비즈니스 규칙으로 모델링합니다.',
++    '백엔드 개발을 중심으로 CI/CD, 관측성, 인프라 자동화까지 연결해 서비스가 실제 운영 환경에서 지속 가능하도록 만듭니다. AI와 Agent 기술은 제품 개발과 검증 과정을 개선하는 보조 역량으로 활용하고 있습니다.',
+   ],
+   sign: 'LSH',
+   latestUpdated: lastestUpdatedAt,
+diff --git a/payload/openSource.ts b/payload/openSource.ts
+index 4bf417e..48ae488 100644
+--- a/payload/openSource.ts
++++ b/payload/openSource.ts
+@@ -2,73 +2,7 @@ import { IOpenSource } from '../component/openSource/IOpenSource';
+ 
+ const openSource: IOpenSource.Payload = {
+   disable: true,
+-  list: [
+-    {
+-      title: 'Linux Kernal',
+-      descriptions: [
+-        {
+-          content: 'Regular contributor to kernel patches.',
+-        },
+-        {
+-          content: 'Active member of kernel security audit team.',
+-        },
+-      ],
+-    },
+-    {
+-      title: 'GNOME',
+-      descriptions: [
+-        {
+-          content: 'Contributor to UX improvements for system utilities.',
+-        },
+-        {
+-          content: 'https://github.com/GNOME',
+-          href: 'https://github.com/GNOME',
+-        },
+-      ],
+-    },
+-    {
+-      title: 'node',
+-      descriptions: [
+-        { content: 'Node.js JavaScript runtime' },
+-        { content: 'Contributor' },
+-        {
+-          content: 'https://github.com/nodejs/node',
+-          href: 'https://github.com/nodejs/node',
+-        },
+-        {
+-          content: 'Github Stars: ',
+-          postImage: 'https://img.shields.io/github/stars/nodejs/node.svg?style=popout',
+-        },
+-      ],
+-    },
+-    {
+-      title: 'NestJS',
+-      descriptions: [
+-        {
+-          content: 'A progressive Node.js framework',
+-        },
+-        {
+-          content:
+-            'for building efficient, scalable, and enterprise-grade server-side applications',
+-        },
+-        {
+-          content: 'Contributor',
+-        },
+-        {
+-          content: 'https://github.com/nestjs/nest',
+-          href: 'https://github.com/nestjs/nest',
+-        },
+-        {
+-          content: 'Monthly Download: ',
+-          postImage: 'https://img.shields.io/npm/dm/@nestjs/core.svg',
+-        },
+-        {
+-          content: 'Github Stars: ',
+-          postImage: 'https://img.shields.io/github/stars/nestjs/nest.svg?style=popout',
+-        },
+-      ],
+-    },
+-  ],
++  list: [],
+ };
+ 
+ export default openSource;
+diff --git a/payload/profile.ts b/payload/profile.ts
+index 4415218..8b2a4b6 100644
+--- a/payload/profile.ts
++++ b/payload/profile.ts
+@@ -1,5 +1,5 @@
+-import { faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
+-import { faFacebook, faGithub } from '@fortawesome/free-brands-svg-icons';
++import { faEnvelope, faLink } from '@fortawesome/free-solid-svg-icons';
++import { faGithub } from '@fortawesome/free-brands-svg-icons';
+ 
+ import { faBell } from '@fortawesome/free-regular-svg-icons';
+ import { IProfile } from '../component/profile/IProfile';
+@@ -11,8 +11,8 @@ const profile: IProfile.Payload = {
+   // image: 'https://resume.yowu.dev/static/image/profile_2019.png',
+   image,
+   name: {
+-    title: '이 승현(Lee Seung-Hyun)',
+-    small: '(36)',
++    title: '이승현 (Lee Seung-Hyun)',
++    small: 'Backend / Platform Engineer',
+   },
+   contact: [
+     {
+@@ -21,21 +21,18 @@ const profile: IProfile.Payload = {
+       icon: faEnvelope,
+     },
+     {
+-      title: 'Please contact me by email',
+-      icon: faPhone,
+-      badge: true,
+-    },
+-    {
++      title: 'GitHub',
+       link: 'https://github.com/gitvssh',
+       icon: faGithub,
+     },
+     {
++      title: 'Tech Blog',
+       link: 'https://damecasol.tistory.com/',
+-      icon: faFacebook,
++      icon: faLink,
+     },
+   ],
+   notice: {
+-    title: '백엔드 개발자 이승현의 온라인 이력서입니다.',
++    title: '금융·결제 도메인과 운영 신뢰성에 강한 Backend / Platform Engineer입니다.',
+     icon: faBell,
+   },
+ };
+diff --git a/payload/project.ts b/payload/project.ts
+index 03b3f2d..e1977a6 100644
+--- a/payload/project.ts
++++ b/payload/project.ts
+@@ -4,204 +4,127 @@ const project: IProject.Payload = {
+   disable: false,
+   list: [
+     {
+-      title: 'QR코드 기반 카드추천 AI 솔로몬 프로젝트 리딩',
+-      startedAt: '2025-04',
+-      where: '큐뱅',
++      title: '차세대 선불결제 플랫폼 설계·개발',
++      startedAt: '2026-01',
++      where: '핀테크 기업 · 개발 진행 중',
+       descriptions: [
+         {
+           content:
+-            '카드 혜택 정보와 결제 데이터를 분석하여 최적의 카드를 추천하는 인공지능 모델 및 서비스 개발.',
++            '승인·충전·결제·환불·정산을 포함한 선불결제 백엔드를 단독으로 설계·개발하고 있습니다.',
+         },
+-        { content: 'Apache Airflow를 활용한 데이터 파이프라인 구축.' },
+-        { content: 'AI 추천 모델 학습을 위한 머신러닝 알고리즘 선별 및 통계 분석.' },
+-        { content: '머신러닝 파이프라인 설계 및 구축.' },
+-      ],
+-    },
+-    {
+-      title: 'QR 결제 서비스 DQMS 개발',
+-      startedAt: '2025-04',
+-      where: '큐뱅',
+-      descriptions: [
+-        {
+-          content: '기능개발, 운영 및 유지보수',
+-          weight: 'MEDIUM',
+-          descriptions: [
+-            { content: '결제사 API 연동을 위한 API 인증 시스템 개발 및 EDI 표준화 작업' },
+-          ],
+-        },
+-        {
+-          content: '개발 문화 개선',
+-          weight: 'MEDIUM',
+-          descriptions: [
+-            { content: '안정적인 형상관리를 위한 git flow 전략 소개 및 도입, 기술 지원' },
+-            { content: 'TDD 방법론 도입 제안 및 파일럿 테스트' },
+-            { content: '온보딩 문서 작성 및 정보 최신화' },
+-          ],
+-        },
+-      ],
+-    },
+-    {
+-      title: '쩜쩜',
+-      startedAt: '2023-03',
+-      endedAt: '2025-03',
+-      where: 'Lowall',
+-      descriptions: [
+         {
+-          content: '시스템 아키텍처 설계 및 개발',
++          content: '도메인 정합성과 트랜잭션 경계',
+           weight: 'MEDIUM',
+           descriptions: [
+-            { content: '대학생 창업동아리 스타트업에 기술 리더십 제공 및 사회적기업 선정 기여.' },
+-            {
+-              content:
+-                '가족 기반 SNS 플랫폼의 기획부터 요구사항 분석, 시스템 설계, 개발 및 운영까지 전 과정 책임.',
+-            },
+-            { content: '서비스 초기 단계부터 확장성을 고려한 도메인 주도 아키텍처 설계.' },
++            { content: '지갑·원장·정산의 금액 불변식과 상태 전이를 도메인 규칙으로 모델링.' },
++            { content: '멱등성 키와 금지 전이 규칙으로 중복 요청과 잘못된 상태 변경을 차단.' },
+           ],
+         },
+         {
+-          content: '클라우드 인프라 구축 및 최적화',
++          content: 'Architecture & Reliability',
+           weight: 'MEDIUM',
+           descriptions: [
+             {
+               content:
+-                '고가용성·확장성을 고려한 AWS 인프라 아키텍처 설계 및 구현 (Route53, ELB, ASG, EC2).',
++                'Hexagonal Architecture와 Modular Monolith로 도메인·애플리케이션·어댑터 경계를 분리.',
+             },
+-            { content: 'Mysql에서 Serverless Aurora DB로 마이그레이션하여 비용 최적화 달성' },
+-            { content: '서버 모니터링 및 로그 수집 시스템 구축.' },
+-          ],
+-        },
+-        {
+-          content: 'DevOps 환경 구축',
+-          weight: 'MEDIUM',
+-          descriptions: [
+-            { content: 'CI/CD 파이프라인 고도화 (Jenkins → GitHub Actions → S3 → CodeDeploy).' },
+-            { content: 'Kubernetes 기반 자동 배포 환경 구축으로 배포 시간 단축 및 안정성 확보.' },
+-            { content: '서버 모니터링 및 로그 수집 시스템 구축.' },
+-          ],
+-        },
+-        {
+-          content: '서비스 아키텍처 고도화',
+-          weight: 'MEDIUM',
+-          descriptions: [
++            { content: '동기 ACID 트랜잭션과 Outbox/DLQ를 조합해 외부 연계 실패와 재처리를 격리.' },
+             {
+-              content:
+-                '모놀리스 아키텍처에서 시작해 프로젝트 진행에 따른 멀티모듈 프로젝트 리팩토링으로 코드 재사용성 향상.',
++              content: '원장 분개 동작과 비즈니스·재무 승인 모델의 차이를 추적해 검토 지점을 도출.',
+             },
+-            { content: '클린 아키텍처 전환을 고려한 인터페이스 설계 및 프로젝트 의존성 관리.' },
+-            { content: 'SPOF를 고려한 이벤트기반 메세지 처리 아키텍처 구축.' },
+-          ],
+-        },
+-        {
+-          content: '대외 홍보 및 기술 커뮤니케이션',
+-          weight: 'MEDIUM',
+-          descriptions: [
+-            { content: '제품 전시회에서 제품 부스 운영 및 현장 고객 응대, 서비스 개선.' },
+-            { content: '잠재 투자자 및 파트너사 대상 기술 스택 및 아키텍처 프레젠테이션.' },
+-            { content: '서비스 고도화에 따른 개발팀 빌딩 및 기술 전략 수립 및 실행.' },
+           ],
+         },
+       ],
+     },
+     {
+-      title: 'KB Pay x Wello 플랫폼 연동 시스템 구축',
+-      startedAt: '2023-11',
+-      endedAt: '2024-01',
+-      where: 'Wello',
++      title: '모바일 POS 1.0 개발 및 운영 배포',
++      startedAt: '2025-06',
++      endedAt: '2026-03',
++      where: '핀테크 기업',
+       descriptions: [
+-        {
+-          content: '외부 시스템과 데이터 연동을 위한 실시간/배치 데이터 연동 시스템 설계 및 구현.',
+-        },
+-        { content: 'Spring Batch 프레임워크 도입으로 처리 성능 200% 향상 및 시스템 안정성 확보.' },
+-        { content: '양사 데이터 통합을 위한 ETL 프로세스 최적화 및 모니터링 체계 구축.' },
++        { content: 'React Native 기반 모바일 POS를 POC부터 프로덕션 1.0 배포까지 주도.' },
++        { content: 'OpenAPI Generator로 프론트엔드와 백엔드의 API 계약과 타입 일관성을 확보.' },
++        { content: '카메라 스캔·결제·FCM 푸시를 구현하고 Sentry 기반 오류 수집 체계를 구성.' },
+       ],
+     },
+     {
+-      title: '웰로링크 B2G 서비스 개발',
+-      startedAt: '2023-11',
+-      endedAt: '2023-12',
+-      where: 'Wello',
++      title: '결제 서비스 운영 자동화 및 관측성 플랫폼',
++      startedAt: '2026-01',
++      where: '핀테크 기업',
+       descriptions: [
+-        { content: '기관 대상 B2G 서비스인 웰로비즈 관리 서비스 개발.' },
+         {
+           content:
+-            '도메인 주도 설계(DDD) 방법론 적용을 통한 비즈니스 로직과 시스템 아키텍처 정합성 확보.',
++            'Grafana LGTM 스택과 Alloy 에이전트를 기반으로 로그·메트릭·트레이스 수집 구조를 설계·배포.',
++        },
++        { content: 'Ansible 플레이북과 Terraform을 활용해 구성 관리와 인프라 배포를 코드화.' },
++        {
++          content:
++            'HashiCorp Vault의 policy/group 표준과 RBAC 체계를 설계해 시크릿 관리 기준을 정립.',
+         },
+-        { content: 'OAuth 2.0 및 JWT 기반 다중 인증 시스템 구현으로 보안성 강화.' },
+-        { content: '통계 데이터 시각화 및 실시간 대시보드 기능 개발.' },
+       ],
+     },
+     {
+-      title: '사내 솔루션 고도화 및 인프라 개선',
+-      startedAt: '2023-02',
+-      endedAt: '2023-09',
+-      where: 'IMB System',
++      title: 'AI Team Control Plane',
++      startedAt: '2026-06',
++      where: 'Personal Project',
+       descriptions: [
+-        { content: '사내 금융 솔루션 UI 고도화(jsp → Vue).' },
+         {
+-          content: '애자일 개발 문화 도입 및 품질 관리 체계 구축',
+-          weight: 'MEDIUM',
+-          descriptions: [
+-            {
+-              content:
+-                'Jenkins 기반 CI/CD 파이프라인 구축으로 배포 소요시간 90% 단축(10분 이상 → 1분 미만).',
+-            },
+-            {
+-              content:
+-                'SonarQube를 활용한 코드 품질 모니터링 시스템 도입 및 기술 부채 지표 50% 개선.',
+-            },
+-            {
+-              content:
+-                'SVN에서 Git으로의 버전 관리 시스템 마이그레이션 및 브랜치 전략(Gitflow) 수립.',
+-            },
+-            { content: '코드 리뷰 프로세스 정립 및 Junit5 기반 테스트 자동화 체계 구축.' },
+-          ],
++          content:
++            'AI가 지원하는 소프트웨어 개발 과정에 승인 게이트, 격리된 Git 작업공간, 변경 근거와 적용 이력을 제공하는 로컬 우선형 Control Plane을 개발.',
+         },
+         {
+-          content: '대용량 데이터 처리 성능 최적화 및 시스템 안정성 향상',
+-          weight: 'MEDIUM',
+-          descriptions: [
+-            { content: '100만건 테스트 데이터셋 기반 부하 테스트(JMeter) 수행 및 병목 구간 식별.' },
+-            { content: 'Scouter APM 도입으로 실시간 애플리케이션 성능 모니터링 체계 확립.' },
+-            {
+-              content:
+-                '데이터베이스 쿼리 최적화 및 인덱싱 전략 수립으로 트랜잭션 처리 속도 60% 향상.',
+-            },
+-          ],
++          content:
++            '요청→PRD→작업 분해→빌드→검증→사람 승인으로 이어지는 추적 가능한 전달 흐름을 설계.',
++        },
++        {
++          content: 'GitHub Repository',
++          href: 'https://github.com/gitvssh/ai-team',
+         },
+       ],
+     },
+     {
+-      title: 'SharePOS 시스템 고도화 및 쿠폰시스템 개발',
+-      startedAt: '2022-06',
+-      endedAt: '2023-01',
+-      where: 'IMB System',
++      title: '가족 기반 SNS Zero-to-One 개발',
++      startedAt: '2023-04',
++      endedAt: '2025-03',
++      where: 'Lowall',
+       descriptions: [
+-        { content: '베트남 VAN사 Alliex SharePOS 백오피스 시스템 고도화 및 오픈 준비.' },
+-        { content: '쿠폰시스템 개발 및 보안(침투) 테스트, 부하 테스트 수행.' },
+-        { content: 'AOP 기반 트랜잭션 관리 개선으로 커넥션 누수 이슈 해결.' },
+-        { content: '100만건 데이터 기반 부하 테스트 및 성능 진단(Scouter, JMeter).' },
++        {
++          content:
++            '제품 기획, 요구사항 분석, 도메인 모델링, 백엔드 개발과 운영까지 전 과정을 주도.',
++        },
++        {
++          content:
++            'DDD와 멀티모듈 구조로 Core·API·Batch 경계를 분리해 코드 재사용성과 변경 용이성을 확보.',
++        },
++        {
++          content:
++            'CloudWatch 기반 사용량 분석과 Right-Sizing, Spot Instance로 AWS 운영 비용을 최적화.',
++        },
+       ],
+     },
+     {
+-      title: '하나은행 글로벌 차세대 확산 프로젝트',
+-      startedAt: '2021-12',
+-      where: 'IMB System',
++      title: 'KB Pay 데이터 연동 시스템',
++      startedAt: '2023-11',
++      endedAt: '2024-01',
++      where: 'Wello',
+       descriptions: [
+-        { content: '하나은행 차세대 시스템(BankHive) 글로벌 확산 프로젝트 참여.' },
+-        { content: '데이터 이행 논리 검증 및 BAD 이슈 대응 개발.' },
+-        { content: '데이터 암호화 이행을 위한 배치 프로그램 개발.' },
+-        { content: '여신 실행·상환 업무 유지보수(지급보증, 이수관 등).' },
++        { content: '대규모 정책·사용자 데이터를 연동하는 실시간/배치 처리 시스템을 설계·구현.' },
++        {
++          content:
++            'Spring Batch Chunk 처리와 QueryDSL 쿼리 최적화로 처리 성능과 데이터 정합성을 개선.',
++        },
++        { content: 'OAuth 2.0과 JWT 기반 기관 사용자 인증 흐름을 구현.' },
+       ],
+     },
+     {
+-      title: '바이브온 AI생기부',
+-      startedAt: '2021-05',
+-      endedAt: '2021-08',
++      title: '레거시 개발·배포 환경 현대화',
++      startedAt: '2023-02',
++      endedAt: '2023-09',
+       where: 'IMB System',
+       descriptions: [
+-        { content: '학생 생활기록부를 AI로 분석하여 입시정보 보고서를 제공하는 서비스 개발.' },
+-        { content: '관리자 페이지(상품 및 구매 관리) 개발 및 테스트.' },
+-        { content: 'Inicis 결제 API 적용 및 검증.' },
++        { content: 'Jenkins CI/CD를 도입해 수동 배포 시간을 10분 이상에서 1분 미만으로 단축.' },
++        { content: 'SVN에서 Git으로 형상관리를 이전하고 GitFlow와 코드 리뷰 프로세스를 정립.' },
++        { content: 'SonarQube 기반 품질 모니터링과 테스트 자동화로 기술 부채 지표를 개선.' },
+       ],
+     },
+   ],
+diff --git a/payload/skill.ts b/payload/skill.ts
+index 91bdda3..f88f737 100644
+--- a/payload/skill.ts
++++ b/payload/skill.ts
+@@ -2,32 +2,32 @@ import { ISkill } from '../component/skill/ISkill';
+ 
+ const programmingLanguages: ISkill.Skill = {
+   category: 'Programming Languages',
+-  items: [
+-    {
+-      title: 'Java',
+-    },
+-    {
+-      title: 'JavaScript',
+-    },
+-    {
+-      title: 'Python',
+-    },
+-  ],
++  items: [{ title: 'Java' }, { title: 'Python' }, { title: 'TypeScript / JavaScript' }],
+ };
+ const backendDevelopment: ISkill.Skill = {
+-  category: 'Backend Development',
++  category: 'Backend / Architecture',
+   items: [
+     { title: 'Spring Boot' },
+     { title: 'Spring Security' },
+     { title: 'Spring Batch' },
+     { title: 'JPA' },
+     { title: 'QueryDSL' },
++    { title: 'DDD' },
++    { title: 'Hexagonal Architecture' },
++    { title: 'Modular Monolith' },
+   ],
+ };
+ 
+ const database: ISkill.Skill = {
+-  category: 'Database',
+-  items: [{ title: 'MySQL' }, { title: 'PostgreSQL' }],
++  category: 'Data / Messaging',
++  items: [
++    { title: 'PostgreSQL' },
++    { title: 'MySQL' },
++    { title: 'Oracle' },
++    { title: 'Redis' },
++    { title: 'Kafka' },
++    { title: 'Airflow' },
++  ],
+ };
+ 
+ const devOps: ISkill.Skill = {
+@@ -36,17 +36,40 @@ const devOps: ISkill.Skill = {
+     { title: 'Docker' },
+     { title: 'Kubernetes' },
+     { title: 'AWS' },
++    { title: 'Terraform' },
++    { title: 'Ansible' },
+     { title: 'Linux' },
+     { title: 'Vault' },
+     { title: 'Jenkins' },
+-    { title: 'Git' },
+-    { title: 'Kafka' },
++    { title: 'GitHub Actions / GitLab CI' },
++  ],
++};
++
++const observability: ISkill.Skill = {
++  category: 'Observability / Security',
++  items: [
++    { title: 'Grafana' },
++    { title: 'Loki / Tempo / Mimir' },
++    { title: 'OpenTelemetry' },
++    { title: 'SonarQube' },
++    { title: 'OAuth 2.0 / JWT' },
++  ],
++};
++
++const aiAgent: ISkill.Skill = {
++  category: 'AI / Agent Engineering',
++  items: [
++    { title: 'LangChain' },
++    { title: 'LangGraph' },
++    { title: 'RAG' },
++    { title: 'FastAPI' },
++    { title: 'Prompt Engineering' },
+   ],
+ };
+ 
+ const skill: ISkill.Payload = {
+   disable: false,
+-  skills: [programmingLanguages, backendDevelopment, database, devOps],
++  skills: [programmingLanguages, backendDevelopment, database, devOps, observability, aiAgent],
+ };
+ 
+ export default skill;
+diff --git a/shellwork.js b/shellwork.js
+index bb5a9d1..e6828f3 100644
+--- a/shellwork.js
++++ b/shellwork.js
+@@ -12,10 +12,10 @@ function judgeCnameCreation() {
+     console.error('shellwork: The homepage field in package.json is required.');
+   }
+ 
+-  // ! 아래 정규표현식에 걸리면 github pages 도메인으로 간주하고 CNAME 을 생성하지 않는다.
+-  const githubIoRegex = /.+\.github\.io\/.+/;
++  const url = new URL(homepage);
+ 
+-  if (githubIoRegex.test(homepage)) {
++  // github.io 사용자/프로젝트 페이지는 CNAME이 필요하지 않다.
++  if (url.hostname.endsWith('.github.io')) {
+     console.log(
+       chalk.yellow(
+         `shellwork: The homepage field in package.json is '${homepage}'. Consider github pages hosting and don't generate docs/CNAME file.`,
+@@ -25,8 +25,6 @@ function judgeCnameCreation() {
+   }
+ 
+   // * 위 정규표현식에 걸리지 않았을 경우 Custom Domain 으로 간주하고 docs/CNAME 을 생성한다.
+-  const url = new URL(homepage);
+-
+   console.log(
+     chalk.yellow(
+       `shellwork: The homepage field in package.json seems to have a custom domain. Create the '${url.hostname}' hostname in docs/CNAME.`,

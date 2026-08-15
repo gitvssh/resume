@@ -1,5 +1,5 @@
-import { faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
-import { faFacebook, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faEnvelope, faLink } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 import { faBell } from '@fortawesome/free-regular-svg-icons';
 import { IProfile } from '../component/profile/IProfile';
@@ -11,8 +11,8 @@ const profile: IProfile.Payload = {
   // image: 'https://resume.yowu.dev/static/image/profile_2019.png',
   image,
   name: {
-    title: '이 승현(Lee Seung-Hyun)',
-    small: '(36)',
+    title: '이승현 (Lee Seung-Hyun)',
+    small: 'Backend / Platform Engineer',
   },
   contact: [
     {
@@ -21,21 +21,18 @@ const profile: IProfile.Payload = {
       icon: faEnvelope,
     },
     {
-      title: 'Please contact me by email',
-      icon: faPhone,
-      badge: true,
-    },
-    {
+      title: 'GitHub',
       link: 'https://github.com/gitvssh',
       icon: faGithub,
     },
     {
+      title: 'Tech Blog',
       link: 'https://damecasol.tistory.com/',
-      icon: faFacebook,
+      icon: faLink,
     },
   ],
   notice: {
-    title: '백엔드 개발자 이승현의 온라인 이력서입니다.',
+    title: '금융·결제 도메인과 운영 신뢰성에 강한 Backend / Platform Engineer입니다.',
     icon: faBell,
   },
 };
