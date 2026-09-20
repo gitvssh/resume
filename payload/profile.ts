@@ -32,7 +32,7 @@ const profile: IProfile.Payload = {
     },
     {
       title: 'Tech Blog',
-      link: 'https://blog.damecasol.com/',
+      link: 'https://gitvssh.github.io/',
       icon: faLink,
     },
   ],

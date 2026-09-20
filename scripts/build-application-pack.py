@@ -98,7 +98,7 @@ def build(kind):
     para('Backend / Platform Engineer' if kind=='backend' else 'AI Platform / Backend Engineer','title',8)
     para('금융·결제의 정합성과 운영 신뢰성을 설계하고, AI 업무 도구를 구현합니다.' if kind=='backend' else 'AI가 자료를 읽고, 권한 안에서 도구를 쓰고, 작업 상태를 이어가도록 만듭니다.','lead',9)
     para('<link href="mailto:gmavsks@gmail.com" color="#255da1">gmavsks@gmail.com</link>  ·  <link href="https://portfolio.damecasol.com/" color="#255da1">portfolio.damecasol.com</link>','small',2)
-    para('<link href="https://github.com/gitvssh" color="#255da1">github.com/gitvssh</link>  ·  <link href="https://blog.damecasol.com/" color="#255da1">blog.damecasol.com</link>','small',6)
+    para('<link href="https://github.com/gitvssh" color="#255da1">github.com/gitvssh</link>  ·  <link href="https://gitvssh.github.io/" color="#255da1">gitvssh.github.io</link>','small',6)
     section('핵심 역량')
     if kind=='backend':
         para('<b>Java · Spring Boot · JPA · QueryDSL · Spring Batch</b><br/>결제 상태·멱등성·트랜잭션 경계 / PostgreSQL·Oracle / CI/CD·관측성')
