@@ -13,7 +13,7 @@ function Component({ payload }: PropsWithChildren<{ payload: IFooter.Payload }>)
   return (
     <Row>
       <Col style={Style.footerCover}>
-        <div style={Style.footer} className="text-center mt-4">
+        <div style={Style.footer} className="text-center mt-4 px-3">
           <EmptyRowCol>
             <small>
               v.{`${payload.version} / `}

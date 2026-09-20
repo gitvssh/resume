@@ -13,6 +13,8 @@ export declare namespace IExperience {
     list: Item[];
     /** ### 총 경력 기간 표시 유/무 */
     disableTotalPeriod?: boolean;
+    /** 중복 재직을 합산하지 않은, 기준일이 있는 확인된 경력 */
+    verifiedTotalPeriod?: string;
   }
 
   export interface Item {

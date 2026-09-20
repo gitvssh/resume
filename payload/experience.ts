@@ -3,6 +3,7 @@ import { IExperience } from '../component/experience/IExperience';
 const experience: IExperience.Payload = {
   disable: false,
   disableTotalPeriod: false,
+  verifiedTotalPeriod: '5년 4개월 · 2026.09 기준',
   list: [
     {
       title: '핀테크 기업',
@@ -23,7 +24,6 @@ const experience: IExperience.Payload = {
             'JPA',
             'QueryDSL',
             'PostgreSQL',
-            'Kafka',
             'Vault',
             'Ansible',
             'Terraform',
@@ -79,9 +79,9 @@ const experience: IExperience.Payload = {
           descriptions: [
             '하나은행 글로벌 차세대 시스템 개발 및 데이터 이행 참여',
             '레거시 시스템 현대화 및 DevOps 도입',
-            '베트남 VAN사 SharePOS 시스템 개발',
-            '코드 품질 지표 50% 개선 (SonarQube 도입)',
-            'SVN→Git 전환과 Jenkins CI/CD 도입으로 배포 시간 10분 이상에서 1분 미만으로 단축',
+            '베트남 VAN사 결제 시스템 개발',
+            'SonarQube를 도입해 코드 품질 분석과 개선 기준 정립',
+            'SVN→Git 전환과 Jenkins CI/CD 도입으로 수동 빌드·배포 절차 자동화',
           ],
           skillKeywords: ['JAVA', 'Spring', 'PostgreSQL', 'Jira', 'Confluence', 'Oracle', 'MDD'],
         },

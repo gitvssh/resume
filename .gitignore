@@ -105,3 +105,8 @@ dist
 .tern-port
 
 .DS_Store
+# Isolated static export; docs contains authored planning documents.
+out-site/
+output/
+.playwright-cli/
+tmp/pdfs/

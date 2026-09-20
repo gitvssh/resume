@@ -21,13 +21,18 @@ const profile: IProfile.Payload = {
       icon: faEnvelope,
     },
     {
+      title: 'Portfolio',
+      link: 'https://portfolio.damecasol.com/',
+      icon: faLink,
+    },
+    {
       title: 'GitHub',
       link: 'https://github.com/gitvssh',
       icon: faGithub,
     },
     {
       title: 'Tech Blog',
-      link: 'https://damecasol.tistory.com/',
+      link: 'https://blog.damecasol.com/',
       icon: faLink,
     },
   ],

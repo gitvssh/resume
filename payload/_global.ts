@@ -10,6 +10,7 @@ export const _global: IGlobal.Payload = {
   favicon,
   headTitle: title,
   seo: {
+    noindex: true,
     title,
     description,
     openGraph: {

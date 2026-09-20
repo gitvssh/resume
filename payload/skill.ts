@@ -25,7 +25,6 @@ const database: ISkill.Skill = {
     { title: 'MySQL' },
     { title: 'Oracle' },
     { title: 'Redis' },
-    { title: 'Kafka' },
     { title: 'Airflow' },
   ],
 };
@@ -63,7 +62,8 @@ const aiAgent: ISkill.Skill = {
     { title: 'LangGraph' },
     { title: 'RAG' },
     { title: 'FastAPI' },
-    { title: 'Prompt Engineering' },
+    { title: 'MCP' },
+    { title: 'Qdrant / Ollama' },
   ],
 };
 

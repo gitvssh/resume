@@ -5,12 +5,13 @@ const project: IProject.Payload = {
   list: [
     {
       title: '차세대 선불결제 플랫폼 설계·개발',
-      startedAt: '2026-01',
+      startedAt: '2026-03',
       where: '핀테크 기업 · 개발 진행 중',
       descriptions: [
         {
           content:
             '승인·충전·결제·환불·정산을 포함한 선불결제 백엔드를 단독으로 설계·개발하고 있습니다.',
+          href: 'https://portfolio.damecasol.com/projects/payment-platform/',
         },
         {
           content: '도메인 정합성과 트랜잭션 경계',
@@ -64,21 +65,36 @@ const project: IProject.Payload = {
       ],
     },
     {
-      title: 'AI Team Control Plane',
-      startedAt: '2026-06',
-      where: 'Personal Project',
+      title: '권한을 분리한 MCP 도구 플랫폼',
+      startedAt: '2026-07',
+      where: '개인 프로젝트 · 사용 중',
+      descriptions: [
+        { content: '원문·시맨틱 검색·DB 조회를 MCP로 연결하고 도구별 자격과 배포 경계를 분리.' },
+        { content: 'SQL 정책 검사와 읽기 전용 트랜잭션, 후보 색인 검증 후 원자적 교체를 구현.' },
+        {
+          content:
+            '2026-09-20 조회 정책·색인 단위 시험 38개 통과. 검색 임베딩은 CPU 기반 로컬 모델 사용.',
+        },
+        {
+          content: '구조·결정·검증 사례',
+          href: 'https://portfolio.damecasol.com/projects/mcp-platform/',
+        },
+      ],
+    },
+    {
+      title: '앱 간 학습 이어가기 서비스',
+      startedAt: '2026-09',
+      where: '개인 프로젝트 · 사용 중',
       descriptions: [
         {
           content:
-            'AI가 지원하는 소프트웨어 개발 과정에 승인 게이트, 격리된 Git 작업공간, 변경 근거와 적용 이력을 제공하는 로컬 우선형 Control Plane을 개발.',
+            'API와 MCP가 같은 PostgreSQL 상태를 사용해 앱 전환·서버 재시작 뒤 답변과 진행을 복원.',
         },
+        { content: '동일 요청 재시도는 기존 결과를 반환하고, 오래된 상태·동시 판정 충돌은 거부.' },
+        { content: '2026-09-06 격리 DB·실제 HTTP·시험용 OAuth로 클라이언트 역할 순서 6가지 검증.' },
         {
-          content:
-            '요청→PRD→작업 분해→빌드→검증→사람 승인으로 이어지는 추적 가능한 전달 흐름을 설계.',
-        },
-        {
-          content: 'GitHub Repository',
-          href: 'https://github.com/gitvssh/ai-team',
+          content: '상태 전이·재시도 검증 사례',
+          href: 'https://portfolio.damecasol.com/projects/study-continuity/',
         },
       ],
     },
@@ -122,7 +138,7 @@ const project: IProject.Payload = {
       endedAt: '2023-09',
       where: 'IMB System',
       descriptions: [
-        { content: 'Jenkins CI/CD를 도입해 수동 배포 시간을 10분 이상에서 1분 미만으로 단축.' },
+        { content: 'Jenkins CI/CD를 도입해 수동 빌드·배포 절차를 자동화.' },
         { content: 'SVN에서 Git으로 형상관리를 이전하고 GitFlow와 코드 리뷰 프로세스를 정립.' },
         { content: 'SonarQube 기반 품질 모니터링과 테스트 자동화로 기술 부채 지표를 개선.' },
       ],
