@@ -10,7 +10,11 @@ export const _global: IGlobal.Payload = {
   favicon,
   headTitle: title,
   seo: {
+    // 2026-09-28 결정: 공개 접근은 유지하되 검색엔진 색인·추적 링크 모두 원치
+    // 않는다. noindex만으로는 next-seo가 기본값 follow를 함께 낸다
+    // (content="noindex,follow") — nofollow를 명시해 noindex,nofollow로 만든다.
     noindex: true,
+    nofollow: true,
     title,
     description,
     openGraph: {
