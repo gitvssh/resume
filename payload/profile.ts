@@ -12,7 +12,7 @@ const profile: IProfile.Payload = {
   image,
   name: {
     title: '이승현 (Lee Seung-Hyun)',
-    small: 'Backend / Platform Engineer',
+    small: 'Backend & Platform Engineer',
   },
   contact: [
     {
@@ -37,7 +37,7 @@ const profile: IProfile.Payload = {
     },
   ],
   notice: {
-    title: '금융·결제 도메인과 운영 신뢰성에 강한 Backend / Platform Engineer입니다.',
+    title: '결제·원장 백엔드와 AI 서비스 백엔드 · 경력 만 5년+',
     icon: faBell,
   },
 };

@@ -10,7 +10,7 @@ const project: IProject.Payload = {
       descriptions: [
         {
           content:
-            '승인·충전·결제·환불·정산을 포함한 선불결제 백엔드를 단독으로 설계·개발하고 있습니다.',
+            '승인·충전·결제·환불·정산을 포함한 선불결제 백엔드의 설계와 개발을 PL로 이끌고 있습니다.',
           href: 'https://portfolio.damecasol.com/projects/payment-platform/',
         },
         {
@@ -32,6 +32,10 @@ const project: IProject.Payload = {
             { content: '동기 ACID 트랜잭션과 Outbox/DLQ를 조합해 외부 연계 실패와 재처리를 격리.' },
             {
               content: '원장 분개 동작과 비즈니스·재무 승인 모델의 차이를 추적해 검토 지점을 도출.',
+            },
+            {
+              content:
+                '개발환경 리허설: 수동 롤백 후 서비스 복귀 16초, Git 상태 재수렴까지 5분 40초, 특정 시각 복원 38초(목표 이후 기록 0건).',
             },
           ],
         },
@@ -65,18 +69,43 @@ const project: IProject.Payload = {
       ],
     },
     {
+      title: '사내 AI 특강 기획·제작',
+      startedAt: '2026-09',
+      endedAt: '2026-09',
+      where: '핀테크 기업 · 대표이사·신입직원 대상',
+      descriptions: [
+        {
+          content:
+            '60분 특강을 기획하고, 영상 12편·스크롤 발표 화면 53장면·시연 자료를 AI 에이전트와 함께 만들어 발표.',
+          href: 'https://portfolio.damecasol.com/projects/ai-lecture/',
+        },
+        {
+          content:
+            'AI의 원리를 실제 실험 값(같은 질문 40번 이어 쓰기, 실제 토큰 분할)으로 설명하고, AI 조사가 지어낸 인용을 원문 대조로 찾아 바로잡음.',
+        },
+        {
+          content:
+            '질문이 이어져 예정 시간을 넘겼고, 회사가 회사 소개 영상을 홍보 자료로 쓰기로 함.',
+        },
+      ],
+    },
+    {
       title: '권한을 분리한 MCP 도구 플랫폼',
       startedAt: '2026-07',
       where: '개인 프로젝트 · 사용 중',
       descriptions: [
         { content: '원문·시맨틱 검색·DB 조회를 MCP로 연결하고 도구별 자격과 배포 경계를 분리.' },
-        { content: 'SQL 정책 검사와 읽기 전용 트랜잭션, 후보 색인 검증 후 원자적 교체를 구현.' },
+        { content: 'SQL 정책 검사와 읽기 전용 트랜잭션, 후보 색인 검사 후 원자적 교체를 구현.' },
         {
           content:
-            '2026-09-20 조회 정책·색인 단위 시험 38개 통과. 검색 임베딩은 CPU 기반 로컬 모델 사용.',
+            '공개 접속은 OAuth 전용으로 분리하고, 그룹에서 빼면 93초 만에 권한이 회수됨을 실측.',
         },
         {
-          content: '구조·결정·검증 사례',
+          content:
+            'Claude Code·Codex·ChatGPT에서 같은 원문과 시작 정보를 사용(2026-09-30 세 연결의 응답 SHA-256 일치).',
+        },
+        {
+          content: '사례 페이지',
           href: 'https://portfolio.damecasol.com/projects/mcp-platform/',
         },
       ],
@@ -91,10 +120,30 @@ const project: IProject.Payload = {
             'API와 MCP가 같은 PostgreSQL 상태를 사용해 앱 전환·서버 재시작 뒤 답변과 진행을 복원.',
         },
         { content: '동일 요청 재시도는 기존 결과를 반환하고, 오래된 상태·동시 판정 충돌은 거부.' },
-        { content: '2026-09-06 격리 DB·실제 HTTP·시험용 OAuth로 클라이언트 역할 순서 6가지 검증.' },
+        { content: '2026-09-06 격리 DB·실제 HTTP·시험용 OAuth로 클라이언트 역할 순서 6가지 확인.' },
         {
-          content: '상태 전이·재시도 검증 사례',
+          content: '사례 페이지',
           href: 'https://portfolio.damecasol.com/projects/study-continuity/',
+        },
+      ],
+    },
+    {
+      title: 'Kubernetes 홈랩 플랫폼 구축·운영',
+      startedAt: '2026-02',
+      where: '개인 프로젝트 · 운영 중',
+      descriptions: [
+        {
+          content:
+            '서버 3대 K3s에 Ansible·Argo CD(애플리케이션 128개)·저장소별 CI·Vault·관측·백업을 갖춰 개인 서비스와 포트폴리오를 운영.',
+          href: 'https://portfolio.damecasol.com/projects/homelab-platform/',
+        },
+        {
+          content:
+            '외부 백업 사본 객체 6,094개 전수 비교 차이 0건, 격리 환경에서 76GB DB 복원(49분 19초)으로 복구 절차를 확인.',
+        },
+        {
+          content:
+            '컨트롤플레인 접속 경로를 가상 주소로 바꿔 리더 교체 2.13초, 0.2초 간격 371회 확인 중 끊김 0회.',
         },
       ],
     },

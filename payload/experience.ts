@@ -12,7 +12,7 @@ const experience: IExperience.Payload = {
           title: 'Tech Lead / Senior Backend & Platform Engineer',
           startedAt: '2025-04',
           descriptions: [
-            '차세대 선불결제 백엔드의 승인·충전·결제·환불·정산 도메인을 단독 설계·개발 중',
+            '차세대 선불결제 백엔드의 승인·충전·결제·환불·정산 도메인 설계·개발을 PL로 이끄는 중',
             'Hexagonal Architecture와 Modular Monolith를 기반으로 원장 정합성, 상태 전이, 멱등성, Outbox 경계를 설계',
             'React Native 기반 모바일 POS를 POC부터 프로덕션 1.0 배포까지 주도',
             'LGTM 관측성 스택, Ansible·Terraform 자동화, Vault RBAC를 연결해 운영 기반 표준화',
