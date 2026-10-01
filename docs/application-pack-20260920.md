@@ -12,13 +12,10 @@
 
 ## 웹 빌드와 배포
 
-기존 `npm run export`는 작성 문서가 있는 `docs`를 지우므로 사용하지 않는다. 다음 순서로 별도 폴더에 출력한다.
+`scripts/publish-pages.sh`가 검사(eslint·tsc), 정적 출력(`out-site/`), gh-pages 커밋을 한 번에 만든다. 인자 없이 실행하면 바뀐 파일만 보여 주고, `--push`를 붙이면 gh-pages에 올린 뒤 실제 주소에 새 빌드가 보일 때까지 확인한다. `--push`는 origin/main에 올라간 커밋만 게시한다.
 
-```sh
-npm run lint
-npx tsc --noEmit
-NODE_OPTIONS=--openssl-legacy-provider npx next build
-NODE_OPTIONS=--openssl-legacy-provider npx next export --outdir out-site
-```
+기존 `npm run export`는 작성 문서가 있는 `docs`를 지우므로 사용하지 않는다. GitHub Pages는 기존 gh-pages 브랜치를 사용하고, 스크립트가 custom domain(`CNAME`)과 `.nojekyll`을 기존 gh-pages에서 그대로 가져온다. 공개 메타데이터에는 noindex를 적용했다. 데스크톱 1440px와 모바일 390px에서 경력 표기·링크·가로 넘침을 확인한다. 모바일 footer에서 확인된 가로 넘침은 수정했다.
 
-GitHub Pages는 기존 gh-pages 브랜치를 사용한다. custom domain과 `.nojekyll`을 유지하며 로컬에서 검증한 정적 출력만 배포한다. 공개 메타데이터에는 noindex를 적용했다. 데스크톱 1440px와 모바일 390px에서 경력 표기·링크·가로 넘침을 확인한다. 모바일 footer에서 확인된 가로 넘침은 수정했다.
+## 2026-10-01 갱신
+
+웹 이력서 소개를 검수된 프로필 문단으로 바꾸고, 선불결제 표현을 PL 역할로 맞췄다. 사내 AI 특강과 Kubernetes 홈랩 항목을 더하고 포트폴리오 사례 페이지로 연결했다. PDF 두 종류(`lee-seunghyun-{backend,ai-platform}-20261001.pdf`)도 같은 문장으로 다시 만들었다. 각각 2페이지이고 링크 11개, 한글 추출, 전 페이지 PNG 렌더링을 확인했다.

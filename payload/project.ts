@@ -102,7 +102,7 @@ const project: IProject.Payload = {
         },
         {
           content:
-            'Claude Code·Codex·ChatGPT에서 같은 원문과 시작 정보를 사용(2026-09-30 세 연결의 응답 SHA-256 일치).',
+            'Claude Code·Codex·ChatGPT 세 앱이 같은 원문과 데이터를 직접 조회하도록 연결해 사용 중.',
         },
         {
           content: '사례 페이지',

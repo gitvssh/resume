@@ -9,7 +9,7 @@ const article: IArticle.Payload = {
       href: 'https://blog.damecasol.com/posts/evaluation-overfit-heldout/',
     },
     {
-      content: '백업 성공과 복구 성공을 구분하는 검증',
+      content: '복구 리허설은 성공했는데 목표 시각 이전 기록이 없던 이유',
       href: 'https://blog.damecasol.com/posts/restore-rehearsal-false-success/',
     },
     {
